@@ -90,7 +90,7 @@ dist
 # public
 
 # webstrom
-.idea
+.idea/
 
 # mac
-.DS_Store
+.DS_Store/
