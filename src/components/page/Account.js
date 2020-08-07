@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Account2 from './Account_components/Account2';
+import Account2 from '.Account2';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
