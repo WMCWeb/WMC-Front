@@ -36,7 +36,9 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, "dist"), // 이 경로에 있는 파일이 변경될 때 번들을 다시 컴파일
         compress: true,
+        inline: true,
         port: process.env.PORT,
+        historyApiFallback: true,
         stats: {
             assets: false,
             children: false,

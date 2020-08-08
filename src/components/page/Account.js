@@ -8,7 +8,7 @@ import TableCell from '@material-ui/core/TableCell';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = theme =>({
+const styles = theme => ({
   root:{
     width:'100%',
     marginTop:theme.spacing.unit * 3,
