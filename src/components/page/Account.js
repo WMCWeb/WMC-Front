@@ -1,85 +1,141 @@
-import React from "react";
-import Customer from "../Account/Customer";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableBody from "@material-ui/core/TableBody";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import Paper from "@material-ui/core/Paper";
-import { withStyles } from "@material-ui/core/styles";
+import React, { Component } from 'react';
 
-const styles = (theme) => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing.unit * 3,
-    overflowX: "auto",
-  },
-  table: {
-    minWidth: 1080,
-  },
-});
 
-// 더미 데이터
-const sampleData = [
-  {
-    id: 1,
-    category: 2,
-    input: 3,
-    output: 4,
-    total: 5,
-    script: 6,
-  },
-  {
-    id: 1,
-    category: 2,
-    input: 3,
-    output: 4,
-    total: 5,
-    script: 6,
-  },
-  {
-    id: 1,
-    category: 2,
-    input: 3,
-    output: 4,
-    total: 5,
-    script: 6,
-  },
-];
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.child = React.createRef();
+  }  
+  
+  
+  state = {
+        maxNo: 1,
+        TTM: [],
+        boards: [
+          
+        ],
+        selectBoard:{}
+    }
+    
+    handleSaveData = (data) => {
+      if (!data.ID) {
+          this.setState({
+              maxNo: this.state.maxNo+1,
+              TTM: this.state.TTM * 1 + data.Input * 1 - data.Output * 1,
+              boards: this.state.boards.concat({ID: this.state.maxNo, Date: new Date(), Category: data.Category, Input: data.Input, Output: data.Output, Script: data.Script, Total: this.state.TTM * 1}),
+              selectedBoard: {}
+          });
+      } else {
+          this.setState({
+              boards: this.state.boards.map(row => data.ID === row.ID ? {...data }: row),
+              selectedBoard: {}
+          })            
+      }
+    }
 
-const Account = (props) => {
-  const { classes } = props;
-  return (
-      <Paper className={classes.root}>
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>번호</TableCell>
-              <TableCell>카테고리</TableCell>
-              <TableCell>입금</TableCell>
-              <TableCell>출금</TableCell>
-              <TableCell>잔액</TableCell>
-              <TableCell>설명</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sampleData.map((tableData, index) => {
-              return (
-                  <Customer
-                      id={tableData.id}
-                      category={tableData.category}
-                      input={tableData.input}
-                      output={tableData.output}
-                      total={tableData.total}
-                      script={tableData.script}
-                      key={index}
-                  />
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Paper>
-  )
+
+    handleSelectRow = (row) => {
+      this.setState({selectedBoard:row});
+    }
+  
+    render() {
+        const { boards, selectedBoard } = this.state;
+        
+        return(
+          <div>
+            <BoardForm selectedBoard={selectedBoard} onSaveData={this.handleSaveData} ref={this.child} />
+            <table>
+              <tbody>
+              <tr align="center">
+                <td width="50">ID</td>
+                <td width="100">Date</td>
+                <td width="200">Category</td>
+                <td width="100">Input</td>
+                <td width="100">Output</td>
+                <td width="500">Script</td>
+                <td width="100">Total</td>
+              </tr>
+              {
+                boards.map(row =>
+                  (<BoardItem key={row.ID} row={row} onSelectRow={this.handleSelectRow}/>)
+                  )
+              }
+              </tbody>
+            </table>
+          </div>
+        );
+    }
 }
 
-export default withStyles(styles)(Account);
+
+/* 내용추가 */
+class BoardForm extends Component {
+  state = {
+    Category:'',
+    Input:'',
+    Output:'',
+    Script:'',
+    Total:''
+  }
+
+
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
+  handleSelectRow = (row) => {
+    this.setState(row);
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.onSaveData(this.state);
+    this.setState({
+      ID:'',
+      Category:'',
+      Input:'',
+      Output:'',
+      Total: ''
+    });
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input placeholder="카테고리" name="Category" onChange={this.handleChange}/>
+        <input placeholder="입금" name="Input" onChange={this.handleChange}/>
+        <input placeholder="출금" name="Output" onChange={this.handleChange}/>
+        <input placeholder="설명" name="Script" onChange={this.handleChange}/>
+        <button type="submit">저장</button>
+      </form>
+    )
+  }
+
+}
+
+
+/* 내용 */
+class BoardItem extends React.Component {
+  handleSelectRow = () => {
+    const { row, onSelectRow } = this.props;
+    onSelectRow(row);
+  }
+  render() {
+    console.log(this.props.row.ID);
+    return(
+      <tr>
+        <td>{this.props.row.ID}</td>
+        <td>{this.props.row.Date.toLocaleDateString('ko-KR')}</td>
+        <td>{this.props.row.Category}</td>
+        <td>{this.props.row.Input}</td>
+        <td>{this.props.row.Output}</td>
+        <td>{this.props.row.Script}</td>
+        <td>{this.props.row.Total}</td>
+      </tr>
+    );
+  }
+}
+
+export default App;
